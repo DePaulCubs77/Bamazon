@@ -1,6 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-console.log("hello");
+
 
 var connection = mysql.createConnection({
 	host: "localhost",
@@ -11,9 +11,9 @@ var connection = mysql.createConnection({
 	// Your password
 	password: "Machinegunmcgurn36",
 	database: "bamazon",
-	// password: ""
 });
 
+// Display all the items that are for sale
 connection.connect(function(err) {
 	if (err) throw err;
 	console.log("connected as id" + connection.threadId);
@@ -24,7 +24,7 @@ connection.connect(function(err) {
  });
 
 
-
+// Prompts the user with two messages
 var buyFurniture = function() {
 	inquirer.prompt([{
 		name: "id",
@@ -37,8 +37,15 @@ var buyFurniture = function() {
 	}]).then(function(answer) {
 		connection.query("SELECT * FROM products where ?", [{item_id:answer.id}], function(err,res) {
 			var product = res[0];
-			console.log(product);
-			if (answer.unit > product.stock_quantity) {
+			processOrder(product, answer);
+
+		});
+		
+	});
+};
+// Function to process the order
+function processOrder(product, answer){
+	if (answer.unit > product.stock_quantity) {
 				console.log("Insufficient quantity!");
 			
 			} else {
@@ -55,8 +62,4 @@ var buyFurniture = function() {
 				});
 
 			}
-			
-		});
-		
-	});
-};
+}
